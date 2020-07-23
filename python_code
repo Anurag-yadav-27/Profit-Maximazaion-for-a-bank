@@ -1,0 +1,118 @@
+//Importing Libraries
+
+import pandas as pd
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+%matplotlib inline
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import plot_tree
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score,recall_score,precision_score
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+
+//Importing Data
+
+data = pd.read_csv("Nordic_Kredit.csv")
+
+//Data Exploration
+
+data.head(50)
+data.isnull().sum()
+data.info()
+data.describe()
+
+//Splitting the data into training and testing modules
+
+y_train = data.iloc[0:800 , 0:1]
+y_test = data.iloc[800: , 0 : 1]
+x_train = data.iloc[0:800 , 1: ]
+x_test = data.iloc[800: , 1: ]
+
+X = data.iloc[: , 1: ]
+y = data.iloc[: , 0]
+X_train, X_test, y_train, y_test = train_test_split(  
+    X, y, test_size = 0.3, random_state = 1) 
+    
+//Naive Bayes Classifier
+
+clf = GaussianNB()
+clf.fit(X_train, y_train)
+pred1 = clf.predict(X_test)
+acc = recall_score(pred1, y_test)
+print(acc)
+
+//Decision Tree Classifier
+
+clf2 = DecisionTreeClassifier(max_depth = 4)
+clf2.fit(X_train, y_train)
+pred2 = clf2.predict(X_test)
+acc = recall_score(pred2, y_test)
+print(acc)
+
+plt.figure(figsize = (20 ,7))
+k = plot_tree(clf2,filled=True,fontsize = 9)
+
+//Support Vector Machine
+
+clf3 = SVC(gamma = 'auto',kernel = 'linear')
+clf3.fit(X_train, y_train)
+pred3 = clf3.predict(X_test)
+rec = recall_score(pred3, y_test)
+prec = precision_score(pred3,y_test)
+acc = accuracy_score(pred3,y_test)
+print(acc,rec,prec)
+
+//Cost Benefit Considerations
+
+
+## so we need to find the total profit the bank would make for our given predictions
+profit = 0
+for i,j in zip(pred1, y_test):
+    if i == j and i==1 :
+        profit =  profit + 35000
+    elif i!= j and i==1:
+        profit = profit - 100000
+        
+        
+print ('Naive bayes Profit :',profit)  
+
+
+## so we need to find the total profit the bank would make for our given predictions
+profit = 0
+for i,j in zip(pred2, y_test):
+    if i == j and i==1 :
+        profit =  profit + 35000
+    elif i!= j and i==1:
+        profit = profit - 100000
+        
+        
+print ('DecisionTree profit :',profit)    
+
+
+## so we need to find the total profit the bank would make for our given predictions
+profit = 0
+for i,j in zip(pred3, y_test):
+    if i == j and i==1 :
+        profit =  profit + 35000
+    elif i!= j and i==1:
+        profit = profit - 100000
+        
+        
+print ('Support Vector Machine profit :', profit)    
+
+//Correlation Plot
+
+x = data.iloc[ : , 1:]
+y = data["Creditability"]
+
+import seaborn as sns
+names = []
+correlations = data.corr()
+sns.heatmap(correlations, square = True, cmap = "YlGnBu")
+plt.yticks(rotation = 0)
+plt.xticks(rotation = 90)
+plt.show()
+    
